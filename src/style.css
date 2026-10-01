@@ -156,6 +156,11 @@ body::before {
 
 .btn-sm { padding: 6px 11px; font-size: 12.5px; }
 
+/* GitHub 开源入口（顶栏图标按钮） */
+.gh-link { text-decoration: none; }
+.gh-link svg { display: block; }
+.gh-link:hover { color: var(--accent); }
+
 /* ------------------------------ 顶部页签 ------------------------------ */
 
 .main-tabs {
@@ -578,6 +583,18 @@ select:focus, input:focus { outline: none; border-color: var(--accent); }
 }
 .footer a { color: var(--accent); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
+
+/* GitHub 开源入口（页脚） */
+.footer-github { margin-top: 10px; }
+.footer-github a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.footer-github a:hover { text-decoration: none; }
+.footer-github svg { flex: 0 0 auto; }
 
 /* ------------------------------ 响应式 ------------------------------ */
 
