@@ -47,18 +47,31 @@ function genName(ds) {
 /** 生成生日 / 年龄 */
 function genBirthday(minAge = 18, maxAge = 65) {
   const today = new Date();
-  const targetAge = randInt(minAge, maxAge);
-  const year = today.getFullYear() - targetAge;
-  const month = randInt(0, 11);
-  const day = randInt(1, 28);
-  const d = new Date(year, month, day);
-  // 精确计算周岁：若今年生日还没到，则减 1。
-  // 必须与真实生日日期比较，否则边界情况下年龄会多算 1 岁。
-  let age = today.getFullYear() - d.getFullYear();
-  const hadBirthday =
-    today.getMonth() > d.getMonth() ||
-    (today.getMonth() === d.getMonth() && today.getDate() >= d.getDate());
-  if (!hadBirthday) age -= 1;
+
+  // 先精确计算给定生日的周岁，若今年生日尚未到则减 1
+  const ageOf = (d) => {
+    let a = today.getFullYear() - d.getFullYear();
+    const hadBirthday =
+      today.getMonth() > d.getMonth() ||
+      (today.getMonth() === d.getMonth() && today.getDate() >= d.getDate());
+    if (!hadBirthday) a -= 1;
+    return a;
+  };
+
+  // 目标年龄取 [minAge, maxAge]，并保证最终算出的周岁落在该区间内。
+  // 由于「今年生日还没到」会额外减 1 岁，这里最多重试若干次以避免边界越界。
+  let d;
+  let age;
+  let target = randInt(minAge, maxAge);
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const year = today.getFullYear() - target;
+    d = new Date(year, randInt(0, 11), randInt(1, 28));
+    age = ageOf(d);
+    if (age >= minAge && age <= maxAge) break;
+    // 越界则修正目标年龄后重试
+    target += age < minAge ? 1 : -1;
+  }
+
   return {
     date: fmtDate(d),
     age,
