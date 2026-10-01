@@ -1,0 +1,70 @@
+name: Deploy to GitHub Pages
+
+# 触发条件：
+# 1. 推送到 main 分支时自动构建并部署
+# 2. 在 Actions 页面手动触发（支持「自动更新」场景，例如定时拉取最新姓名库后重新构建）
+on:
+  push:
+    branches: [main, master]
+  schedule:
+    # 每周一 UTC 00:00 自动重建一次，确保部署产物与依赖保持最新
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+# 授予 GITHUB_TOKEN 部署到 Pages 所需的权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只保留一个部署任务；不取消正在进行的正式部署
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Add .nojekyll
+        # 阻止 GitHub Pages 的 Jekyll 处理，避免下划线开头的资源被忽略
+        run: touch dist/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
