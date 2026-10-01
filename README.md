@@ -70,6 +70,26 @@ pnpm preview    # 本地预览构建结果
 
 构建产物是**纯静态文件**，可直接用浏览器打开 `dist/index.html`，或托管到任意静态服务器。
 
+### 自动化测试
+
+项目内置两套自检脚本，用于保证数据质量与界面可用性：
+
+```bash
+pnpm validate   # 数据模块 + 生成引擎自检
+pnpm smoke      # 界面冒烟测试（jsdom 中加载构建产物）
+pnpm check      # 一键跑完：校验 → 构建 → 冒烟测试
+```
+
+`pnpm validate` 会校验：
+
+- 四国数据模块的数组完整性（州/省、区号、姓名库、城市、公司等是否达到最小条数）
+- 城市所属的 `state` 代码能否在 `states` 中找到（引用完整性）
+- 邮编是否为字符串（保留前导零）
+- 每种国籍各生成 200 份身份，检查必填字段是否缺失
+- **所有银行卡号是否通过 Luhn 校验**、年龄是否落在 18–65、邮箱格式是否合法
+
+`pnpm smoke` 会在 jsdom 中加载打包后的真实产物，验证 8 张卡片渲染、四国切换后的**电话/邮编格式**是否符合各国规则、批量生成数量、主题切换，以及 JSON / CSV / SQL / TXT 导出是否正确。
+
 ---
 
 ## 🌐 部署到 GitHub Pages
@@ -128,6 +148,9 @@ schedule:
 ├── index.html                     # 入口 HTML
 ├── vite.config.js                 # Vite 构建配置（base: './' 适配 Pages）
 ├── package.json
+├── scripts/
+│   ├── validate.mjs               # 数据与生成引擎自检
+│   └── smoke-ui.mjs               # 界面冒烟测试（jsdom）
 └── src/
     ├── main.js                    # 应用主入口：UI 渲染与交互
     ├── style.css                  # 样式表（深色/浅色主题、响应式）
