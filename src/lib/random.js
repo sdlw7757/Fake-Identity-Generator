@@ -30,12 +30,16 @@ export function chance(p) {
   return Math.random() < p;
 }
 
-/** 用数字替换模板中的占位符：A -> 大写字母，B -> 非零数字，C -> 数字 */
+/**
+ * 用随机字符替换模板中的占位符：
+ *   A -> 大写字母    B -> 非零数字(1-9)    C -> 数字(0-9)    D -> 字母或数字
+ */
 export function fillTemplate(tpl) {
-  return tpl.replace(/[ABC]/g, (ch) => {
+  return tpl.replace(/[ABCD]/g, (ch) => {
     if (ch === 'A') return String.fromCharCode(randInt(65, 90));
     if (ch === 'B') return String(randInt(1, 9));
-    return String(randInt(0, 9));
+    if (ch === 'C') return String(randInt(0, 9));
+    return randInt(0, 1) ? String(randInt(0, 9)) : String.fromCharCode(randInt(65, 90));
   });
 }
 
@@ -44,6 +48,16 @@ export function digits(len) {
   let s = '';
   for (let i = 0; i < len; i++) s += String(randInt(0, 9));
   return s;
+}
+
+/**
+ * 填充电话号码模板。
+ * 电话模板中 A / B / C 一律代表「数字」，仅语义不同：
+ *   A -> 0-9（区号首段等）   B -> 1-9（首位非零）   C -> 0-9
+ * 注意不能复用 fillTemplate，那里 A 表示大写字母（用于邮编）。
+ */
+export function fillPhone(tpl) {
+  return tpl.replace(/[ABC]/g, (ch) => (ch === 'B' ? String(randInt(1, 9)) : String(randInt(0, 9))));
 }
 
 /** 日期格式化为 YYYY-MM-DD */

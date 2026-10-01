@@ -3,14 +3,19 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "美国/英国/加拿大/澳大利亚 虚拟身份信息生成器 — 供开发者测试表单与注册流程",
+  "description": "全球 63 个国家 / 地区虚拟身份信息生成器 — 供开发者测试表单与注册流程",
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "gen:index": "node scripts/gen-index.mjs",
+    "build": "node scripts/gen-index.mjs && vite build",
     "preview": "vite preview --port 4173",
     "validate": "node scripts/validate.mjs",
     "smoke": "node scripts/smoke-ui.mjs",
-    "check": "node scripts/validate.mjs && vite build && node scripts/smoke-ui.mjs"
+    "check": "node scripts/gen-index.mjs && node scripts/validate.mjs && vite build && node scripts/smoke-ui.mjs"
   },
   "devDependencies": {
     "jsdom": "^30.1.1",

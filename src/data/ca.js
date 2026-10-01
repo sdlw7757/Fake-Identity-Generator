@@ -439,3 +439,5 @@ export const ca = {
 
   domainSuffixes: ['gmail.com', 'yahoo.ca', 'outlook.com', 'hotmail.ca', 'icloud.com', 'sympatico.ca', 'shaw.ca'],
 };
+
+export default ca;

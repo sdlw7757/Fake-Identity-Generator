@@ -32,19 +32,24 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          # 与 package.json 的 packageManager / 本地开发保持一致。
+          # pnpm-workspace.yaml 使用的 allowBuilds 需要 pnpm 10+。
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # jsdom 30 要求 Node ^22.22.2 || ^24.15.0 || >=26，因此不能用 Node 20。
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile || pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm run build
+      - name: Validate & Build
+        # check = 生成数据入口 → 数据/引擎自检 → vite build → 界面冒烟测试
+        # 任何一步失败都不会部署，避免把坏数据发布上线。
+        run: pnpm run check
 
       - name: Add .nojekyll
         # 阻止 GitHub Pages 的 Jekyll 处理，避免下划线开头的资源被忽略

@@ -3,3 +3,9 @@ dist/
 .DS_Store
 *.local
 .vite/
+
+# 数据生成时使用的临时工作目录（_wip / _wip2 ...）
+_wip*/
+
+# 构建与校验的临时日志
+*.log

@@ -448,3 +448,5 @@ export const au = {
 
   domainSuffixes: ['gmail.com', 'yahoo.com.au', 'outlook.com', 'hotmail.com', 'icloud.com', 'bigpond.com', 'optusnet.com.au'],
 };
+
+export default au;
