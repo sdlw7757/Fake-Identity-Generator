@@ -30,11 +30,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup pnpm
+        # 版本由 package.json 的 packageManager 字段（pnpm@11.22.0）唯一决定。
+        # 这里不要再传 version，否则与 packageManager 字符串不一致时
+        # action 会直接报 "Multiple versions of pnpm specified"。
+        # pnpm-workspace.yaml 用到的 allowBuilds 需要 pnpm 10+。
         uses: pnpm/action-setup@v4
-        with:
-          # 与 package.json 的 packageManager / 本地开发保持一致。
-          # pnpm-workspace.yaml 使用的 allowBuilds 需要 pnpm 10+。
-          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
